@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const vendorSchema = require('../models/vendor.model');
 
+// -----------------------VENDOR API---------Sohil----25-02-2021
 router.post('/vendor_register', async function(req, res, next){
     const {name, mobileNo, emailId, type, whatsappNo, GSTNo, companyName, address, area, lat, long, password, fcmToken} = req.body;
     try {

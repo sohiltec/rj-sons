@@ -30,6 +30,7 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
+// -----------------------EMPLOYEE API---------Sohil----25-02-2021
 router.post('/employee_register', upload.single('proofImage'), async function(req, res, next){
     const {name, mobileNo, emailId, proofType, vehicleType, vehicleNo, IFSCCode, Bank, AcNo, branch, isVerified, isActive} = req.body;
     var fileinfo = req.file;

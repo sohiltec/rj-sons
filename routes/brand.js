@@ -7,6 +7,7 @@ const multer = require('multer');
 
 var brandSchema = require('../models/brand.model');
 var categorySchema = require('../models/category.model');
+var productSchema = require('../models/product.model');
 
 var brandImage = multer.diskStorage({
     destination: function(req, file, cb){
@@ -46,6 +47,22 @@ var uploadcategory = multer({
     fileFilter: fileFilter
 });
 
+var productImage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'uploads/productImage');
+    },
+    filename: function(req, file, cb){
+        cb(null, Date.now() + '_' + file.originalname);
+    }
+});
+
+var uploadProduct = multer({
+    storage: productImage,
+    limits: {fileSize: 1024 * 1024 * 5},
+    fileFilter: fileFilter
+});
+
+// -----------------------BRAND API---------Sohil----26-02-2021
 router.post('/brand_register', uploadBrand.single('brandProfileImage'), async function(req, res, next){
     const{ brandName, brandMobile, brandEmail } = req.body;
     var fileinfo = req.file;
@@ -132,6 +149,7 @@ router.post('/getAllBrand', async function(req, res, next){
     }
 });
 
+// -----------------------CATEGORY API---------Sohil----26-02-2021
 router.post('/addCategory', uploadcategory.single('categoryImage'), async function(req, res, next) {
     const{ brandId, name } = req.body;
     var fileinfo = req.file;
@@ -191,6 +209,77 @@ router.post('/getAllCategory', async function(req, res, next){
             res.status(200).json({ IsSuccess: true, total: existCategory.length, Data: existCategory, Message: "Data Found"});
         }else{
             res.status(200).json({ IsSuccess: true, Data: [], Message: "Data Not Found"});
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false, Message: error.message });
+    }
+});
+
+// -----------------------PRODUCT API---------Sohil----26-02-2021
+router.post('/addProduct', uploadProduct.single('productImage'), async function(req, res, next) {
+    const{ categoryId, brandId, name, price, quantity } = req.body;
+    var fileinfo = req.file;
+    try {
+        var existProduct = await new productSchema({
+            categoryId: categoryId,
+            brandId: brandId,
+            name: name,
+            price: price,
+            quantity: quantity,
+            productImage: fileinfo == undefined ? " " : fileinfo.path
+        });
+        if(existProduct != null){
+            existProduct.save();
+            res.status(200).json({ IsSuccss: true, Data: existProduct, Message: "Product Registered !"});
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false, Message: error.message });
+    }
+});
+
+router.post('/updateProduct', uploadProduct.single('productImage'), async function(req, res, next) {
+    const{ productId, name, price, quantity } = req.body;
+    var fileinfo = req.file;
+    try {
+        var existProduct = await productSchema.find({ _id: productId });
+        if(existProduct.length == 1){
+            let updateIs = {
+                name: name,
+                price: price,
+                quantity: quantity,
+                productImage: fileinfo == undefined ? " " : fileinfo.path
+            }
+            var updateProductIs = await productSchema.findByIdAndUpdate(existProduct[0]._id,updateIs);
+            res.status(200).json({ IsSuccss: true, Data: 1, Message: "Data Updated"});
+        }else{
+            res.status(200).json({ IsSuccss: true, Data: 0, Message: "Data Not Updated"});
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccss: false , Message: error.message });
+    }
+});
+
+router.post('/getAllProduct', async function(req, res, next){
+    try {
+        var existProduct = await productSchema.find();
+        if(existProduct.length > 0){
+            res.status(200).json({ IsSuccess: true, total: existProduct.length, Data: existProduct, Message: "Data Found"});
+        }else{
+            res.status(200).json({ IsSuccess: true, Data: [], Message: "Data Not Found"});
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false, Message: error.message });
+    }
+});
+
+router.post('/deleteProduct', async function(req, res, next){
+    const { productId } = req.body;
+    try {
+        var existProduct = await productSchema.findByIdAndDelete(productId);
+        if(existProduct){
+            res.status(200).json({ IsSuccess: true, Data: 1, Message: "Delete Successfully!" });
+        }else{
+            res.status(200).json({ IsSuccess: true, Data: 0, Message: "Delete Failed!" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false, Message: error.message });
