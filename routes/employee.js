@@ -102,9 +102,9 @@ router.post('/updateEmployee', upload.single('proofImage'), async function(req, 
 });
 
 router.post('/deleteEmployee', async function(req, res, next){
-    const { id } = req.body;
+    const { employeeId } = req.body;
     try {
-        var existEmployee = await employeeSchema.findByIdAndDelete(id);
+        var existEmployee = await employeeSchema.findByIdAndDelete(employeeId);
         if(existEmployee){
             res.status(200).json({ IsSuccess: true, Data: 1, Message: "Delete Successfully!" });
         }else{

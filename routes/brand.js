@@ -67,7 +67,7 @@ router.post('/brand_register', uploadBrand.single('brandProfileImage'), async fu
     const{ brandName, brandMobile, brandEmail } = req.body;
     var fileinfo = req.file;
     try {
-        var brandData = await brandSchema.find({ brandMobile: brandMobile });
+        var brandData = await brandSchema.find({ brandMobile: brandMobile, brandName: brandName });
         if(brandData.length == 1){
             res.status(200).json({ IsSuccss: true, Data: [], Message: "MobileNo. Already Registered !"});
         }else{
@@ -154,14 +154,22 @@ router.post('/addCategory', uploadcategory.single('categoryImage'), async functi
     const{ brandId, name } = req.body;
     var fileinfo = req.file;
     try {
-        var existCategory = await new categorySchema({
+        var existCategory1 = await categorySchema.find({
             brandId: brandId,
-            name: name,
-            categoryImage: fileinfo == undefined ? " " : fileinfo.path
+            name: name
         });
-        if(existCategory != null){
-            existCategory.save();
-            res.status(200).json({ IsSuccss: true, Data: existCategory, Message: "Category Registered !"});
+        if(existCategory1.length == 1){
+            res.status(200).json({ IsSuccess: true, Data: [], Message: "Category Already Registered !"});
+        }else{
+            var existCategory = await new categorySchema({
+                brandId: brandId,
+                name: name,
+                categoryImage: fileinfo == undefined ? " " : fileinfo.path
+            });
+            if(existCategory != null){
+                existCategory.save();
+                res.status(200).json({ IsSuccss: true, Data: existCategory, Message: "Category Registered !"});
+            }
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false, Message: error.message });
@@ -220,17 +228,26 @@ router.post('/addProduct', uploadProduct.single('productImage'), async function(
     const{ categoryId, brandId, name, price, quantity } = req.body;
     var fileinfo = req.file;
     try {
-        var existProduct = await new productSchema({
+        var existProduct1 = await productSchema.find({
             categoryId: categoryId,
             brandId: brandId,
-            name: name,
-            price: price,
-            quantity: quantity,
-            productImage: fileinfo == undefined ? " " : fileinfo.path
+            name: name
         });
-        if(existProduct != null){
-            existProduct.save();
-            res.status(200).json({ IsSuccss: true, Data: existProduct, Message: "Product Registered !"});
+        if(existProduct1.length == 1){
+            res.status(200).json({ IsSuccess: true, Data: [], Message: "Product Already Registered !"});
+        }else{
+            var existProduct = await new productSchema({
+                categoryId: categoryId,
+                brandId: brandId,
+                name: name,
+                price: price,
+                quantity: quantity,
+                productImage: fileinfo == undefined ? " " : fileinfo.path
+            });
+            if(existProduct != null){
+                existProduct.save();
+                res.status(200).json({ IsSuccss: true, Data: existProduct, Message: "Product Registered !"});
+            }
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false, Message: error.message });
