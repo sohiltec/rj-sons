@@ -13,7 +13,7 @@ var productSchema = mongoose.Schema({
         type: String
     },
     price: {
-        type: String
+        type: Number
     },
     quantity: {
         type: String
