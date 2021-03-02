@@ -6,7 +6,7 @@ var orderSchema = mongoose.Schema({
         ref: "Vendors"
     },
     quantity: {
-        type: String
+        type: Number
     },
     amount: {
         type: Number
@@ -25,23 +25,25 @@ var orderSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    status: {
-        type: String,
-        required: true
+    statusId: {
+        type: mongoose.Types.ObjectId,
+        ref: "Status"
     },
     employeeId: {
         type: mongoose.Types.ObjectId,
         ref: "Employees"
     },
-    orderContent: {
-        productId: {
-            type: mongoose.Types.ObjectId,
-            ref: "Products"
-        },
-        productQty: {
-            type: String
+    orderContent: [
+        {
+            productId: {
+                type: mongoose.Types.ObjectId,
+                ref: "Products"
+            },
+            productQty: {
+                type: Number
+            }
         }
-    },
+    ],
     note: {
         type: String
     }

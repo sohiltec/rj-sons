@@ -36,14 +36,6 @@ var vendorSchema = mongoose.Schema({
             type: String
         }
     },
-    gpsLocation: {
-        lat: {
-            type: String
-        },
-        long: {
-            type: String
-        }
-    },
     password: {
         type: String
     },
