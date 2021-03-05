@@ -16,7 +16,7 @@ var productSchema = mongoose.Schema({
         type: Number
     },
     quantity: {
-        type: String
+        type: Number
     },
     productImage: {
         type: String

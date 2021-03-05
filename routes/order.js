@@ -7,6 +7,7 @@ const moment = require('moment');
 
 const orderSchema = require('../models/order.model');
 const statusSchema = require('../models/status.model');
+const productSchema = require('../models/product.model');
 
 // -----------------------------status-------------------2-3-2021--
 router.post('/addStatus', async function(req, res, next){
@@ -133,5 +134,40 @@ router.post('/deleteOrder', async function(req, res, next){
         res.status(500).json({ IsSuccess: false, Message: error.message });
     }
 });
+
+router.post('/orderCalc', async function(req, res, next){
+    const{ orderContent, discount } = req.body;
+
+    let totalQty = 0
+    let totalAmount = 0;
+
+    for(let i=0;i<orderContent.length;i++){
+        let productIdIs = orderContent[i].productId;
+        let productQtyIs = orderContent[i].productQty;
+        let products = await productSchema.find({ _id: productIdIs });
+        let priceIs = products[0].price;
+        let totalPrice = productQtyIs * priceIs;
+        totalQty += productQtyIs;
+        totalAmount += totalPrice;
+        // console.log(productIdIs);
+        // console.log(productQtyIs);
+        // console.log(priceIs);
+        // console.log(totalPrice);
+        // console.log(totalQty);
+        // console.log(totalAmount);
+
+    }
+    let finalAmount = totalAmount - discount;
+
+    let dataset = [{
+        quantity: totalQty,
+        amount: totalAmount,
+        discount: discount,
+        finalAmount: finalAmount,
+    }];
+    console.log(dataset);
+    res.status(200).json({ IsSuccess: true, Data: dataset, Message: "Calculation Found"});
+});
+
 
 module.exports = router;
