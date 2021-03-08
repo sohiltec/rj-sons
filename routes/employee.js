@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require('path');
 const express = require('express');
 const config = require("../config");
 const router = express.Router();
@@ -6,34 +7,43 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 
 const employeeSchema = require('../models/employee.model');
+const prooftypeSchema = require('../models/prooftype.model');
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb){
         cb(null, 'uploads/employeeProof');
     },
     filename: function(req, file, cb){
-        cb(null, Date.now() + file.originalname);
+        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
     }
 });
-
-var fileFilter = (req, file, cb) => {
-    if(file.mimetype == 'image/jpeg' || file.mimetype == 'image/png'){
-        cb(null, true);
-    }else{
-        cb(null, false);
-    }
-}
 
 var upload = multer({
     storage: storage,
-    limits: {fileSize: 1024 * 1024 * 5},
-    fileFilter: fileFilter
+    limits: {fileSize: 1024 * 1024 * 5}
 });
+var fieldset = upload.fields([
+    { name: "proofFrontImg", maxCount: 1 },
+    { name: "proofBackImg", maxCount: 1 },
+    { name: "panCardImg", maxCount: 1 },
+]);
 
+router.post('/masterData', async function(req, res, next){
+    try {
+        var proofType = await prooftypeSchema.find();
+        if(proofType){
+            res.status(200).json({ IsSuccess: true, proofType: proofType, Message: "Data Found" });
+        }else{
+            res.status(200).json({ IsSuccess: true, Data: [], Message: "Data Not Found" });
+        }    
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false, Message: error.message });
+    }
+});
 // -----------------------EMPLOYEE API---------Sohil----25-02-2021
-router.post('/employee_register', upload.single('proofImage'), async function(req, res, next){
-    const {name, mobileNo, emailId, proofType, vehicleType, vehicleNo, IFSCCode, Bank, AcNo, branch, isVerified, isActive} = req.body;
-    var fileinfo = req.file;
+router.post('/employee_register', fieldset, async function(req, res, next){
+    const {name, mobileNo, emailId, proofType, fcmToken, vehicleType, vehicleNo, IFSCCode, Bank, AcNo, branch, isVerified, isActive} = req.body;
+    var fileinfo = req.files;
     try {
         var employeedata1 = await employeeSchema.find({ mobileNo: mobileNo });
         if(employeedata1.length == 1){
@@ -44,8 +54,11 @@ router.post('/employee_register', upload.single('proofImage'), async function(re
                 mobileNo: mobileNo,
                 emailId: emailId,
                 proofType: proofType,
-                proofImage: fileinfo == undefined ? " " : fileinfo.path,
-                empId: empIdCode(),  
+                proofFrontImg: fileinfo == undefined ? " " : fileinfo.proofFrontImg[0].path,
+                proofBackImg: fileinfo == undefined ? " " : fileinfo.proofBackImg[0].path,
+                panCardImg: fileinfo == undefined ? " " : fileinfo.panCardImg[0].path,
+                empId: empIdCode(),
+                fcmToken: fcmToken,  
                 transport: {
                     vehicleType: vehicleType,
                     vehicleNo: vehicleNo
@@ -69,15 +82,17 @@ router.post('/employee_register', upload.single('proofImage'), async function(re
     }
 });
 
-router.post('/updateEmployee', upload.single('proofImage'), async function(req, res, next){
+router.post('/updateEmployee', fieldset, async function(req, res, next){
     const {employeeId, name, emailId, proofType, vehicleType, vehicleNo, IFSCCode, Bank, AcNo, branch, isVerified, isActive} = req.body;
-    var fileinfo = req.file;
+    var fileinfo = req.files;
     try {
             var existEmployee = await employeeSchema.findByIdAndUpdate(employeeId, {
                 name: name,
                 emailId: emailId,
                 proofType: proofType,
-                proofImage: fileinfo == undefined ? " " : fileinfo.path,
+                proofFrontImg: fileinfo == undefined ? " " : fileinfo.proofFrontImg[0].path,
+                proofBackImg: fileinfo == undefined ? " " : fileinfo.proofBackImg[0].path,
+                panCardImg: fileinfo == undefined ? " " : fileinfo.panCardImg[0].path,
                 transport: {
                     vehicleType: vehicleType,
                     vehicleNo: vehicleNo

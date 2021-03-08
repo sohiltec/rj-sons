@@ -10,6 +10,9 @@ var customerSchema = mongoose.Schema({
     emailId: {
         type: String
     },
+    GSTNo: {
+        type: String
+    },
     address: {
         address: {
             type: String

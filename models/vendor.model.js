@@ -42,6 +42,14 @@ var vendorSchema = mongoose.Schema({
     fcmToken: {
         type: String,
         default: ""
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 });
 

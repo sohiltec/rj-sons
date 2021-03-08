@@ -8,7 +8,7 @@ const vendorSchema = require('../models/vendor.model');
 
 // -----------------------VENDOR API---------Sohil----25-02-2021
 router.post('/vendor_register', async function(req, res, next){
-    const {name, mobileNo, emailId, type, whatsappNo, GSTNo, companyName, address, area, lat, long, password, fcmToken} = req.body;
+    const {name, mobileNo, emailId, type, whatsappNo, GSTNo, companyName, address, area, lat, long, password, fcmToken, isVerified, isActive } = req.body;
     try {
         var vendordata1 = await vendorSchema.find({ mobileNo: mobileNo });
         if(vendordata1.length == 1){
@@ -29,7 +29,9 @@ router.post('/vendor_register', async function(req, res, next){
                     long: long,
                 },
                 password: password,
-                fcmToken: fcmToken
+                fcmToken: fcmToken,
+                isVerified: isVerified,
+                isActive: isActive
             });
             if(vendordata != null){
                 vendordata.save();
@@ -42,7 +44,7 @@ router.post('/vendor_register', async function(req, res, next){
 });
 
 router.post('/updateVendor', async function(req, res, next){
-    const {vendorId, name, emailId, type, whatsappNo, GSTNo, companyName, address, area, lat, long, password} = req.body;
+    const {vendorId, name, emailId, type, whatsappNo, GSTNo, companyName, address, area, lat, long, password, isActive, isVerified } = req.body;
     try {
             var existVendor = await vendorSchema.findByIdAndUpdate(vendorId, {
                 name: name,
@@ -57,7 +59,9 @@ router.post('/updateVendor', async function(req, res, next){
                     lat: lat,
                     long: long,
                 },
-                password: password
+                password: password,
+                isVerified: isVerified,
+                isActive: isActive
             });
             
             if(existVendor != null){

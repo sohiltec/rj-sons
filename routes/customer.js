@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const customerSchema = require('../models/customer.model');
 
 router.post('/customer_register', async function(req, res, next){
-    const{ name, mobileNo, emailId, address, lat, long } = req.body;
+    const{ name, mobileNo, emailId, GSTNo, address, lat, long } = req.body;
     try {
         var existCustomer1 = await customerSchema.find({ mobileNo: mobileNo });
         if(existCustomer1.length == 1){
@@ -17,6 +17,7 @@ router.post('/customer_register', async function(req, res, next){
                 name: name,
                 mobileNo: mobileNo,
                 emailId: emailId,
+                GSTNo: GSTNo,
                 address: {
                     address: address,
                     lat: lat,

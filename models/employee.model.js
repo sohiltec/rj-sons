@@ -11,9 +11,16 @@ var employeeSchema = mongoose.Schema({
         type: String
     },
     proofType: {
+        type: String,
+        required: true
+    },
+    proofFrontImg: {
         type: String
     },
-    proofImage: {
+    proofBackImg: {
+        type: String
+    },
+    panCardImg: {
         type: String
     },
     empId: {
@@ -46,10 +53,12 @@ var employeeSchema = mongoose.Schema({
         }
     },
     isVerified: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
     isActive: {
-        type: Boolean
+        type: Boolean,
+        default: true
     },
 });
 
