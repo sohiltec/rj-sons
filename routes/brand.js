@@ -14,22 +14,13 @@ var brandImage = multer.diskStorage({
         cb(null, 'uploads/brandImage');
     },
     filename: function(req, file, cb){
-        cb(null, Date.now() + file.originalname);
+        cb(null, Date.now() + "_" + file.originalname);
     }
 });
 
-var fileFilter = (req, file, cb) => {
-    if(file.mimetype == 'image/jpeg' || file.mimetype == 'image/png'){
-        cb(null, true);
-    }else{
-        cb(null, false);
-    }
-}
-
 var uploadBrand = multer({
     storage: brandImage,
-    limits: {fileSize: 1024 * 1024 * 5},
-    fileFilter: fileFilter
+    limits: {fileSize: 1024 * 1024 * 5}
 });
 
 var categoryImage = multer.diskStorage({
@@ -43,8 +34,7 @@ var categoryImage = multer.diskStorage({
 
 var uploadcategory = multer({
     storage: categoryImage,
-    limits: {fileSize: 1024 * 1024 * 5},
-    fileFilter: fileFilter
+    limits: {fileSize: 1024 * 1024 * 5}
 });
 
 var productImage = multer.diskStorage({
@@ -58,8 +48,7 @@ var productImage = multer.diskStorage({
 
 var uploadProduct = multer({
     storage: productImage,
-    limits: {fileSize: 1024 * 1024 * 5},
-    fileFilter: fileFilter
+    limits: {fileSize: 1024 * 1024 * 5}
 });
 
 // -----------------------BRAND API---------Sohil----26-02-2021

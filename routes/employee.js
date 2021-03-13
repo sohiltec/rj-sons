@@ -28,6 +28,19 @@ var fieldset = upload.fields([
     { name: "panCardImg", maxCount: 1 },
 ]);
 
+function empIdCode() {
+    var result = "";
+    var number = Math.floor(1000 + Math.random() * 9000);
+    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var charLength = characters.length;
+    for(var i = 0; i < 4; i++){
+        result += characters.charAt(Math.floor(Math.random() * charLength));
+    }
+    var finalResult = result + number;
+    console.log(finalResult);
+    return finalResult;
+}
+
 router.post('/masterData', async function(req, res, next){
     try {
         var proofType = await prooftypeSchema.find();
@@ -40,7 +53,7 @@ router.post('/masterData', async function(req, res, next){
         res.status(500).json({ IsSuccess: false, Message: error.message });
     }
 });
-// -----------------------EMPLOYEE API---------Sohil----25-02-2021
+
 router.post('/employee_register', fieldset, async function(req, res, next){
     const {name, mobileNo, emailId, proofType, fcmToken, vehicleType, vehicleNo, IFSCCode, Bank, AcNo, branch, isVerified, isActive} = req.body;
     var fileinfo = req.files;
@@ -157,18 +170,5 @@ router.post('/getAllEmployee', async function(req, res, next){
         res.status(500).json({ IsSuccess: false, Message: error.message });
     }
 });
-
-function empIdCode() {
-    var result = "";
-    var number = Math.floor(1000 + Math.random() * 9000);
-    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var charLength = characters.length;
-    for(var i = 0; i < 4; i++){
-        result += characters.charAt(Math.floor(Math.random() * charLength));
-    }
-    var finalResult = result + number;
-    console.log(finalResult);
-    return finalResult;
-}
 
 module.exports = router;
